@@ -44,9 +44,7 @@ function dates_with_at_least_n_scores($pdo, $n)
             ORDER BY `date` DESC
     ", $n);
 
-    $statement = $pdo->prepare($sql);
-    $statement->execute();
-    $result = $statement->fetchAll();
+    $result = select($pdo, $sql);
 
     $dates = [];
     foreach ($result as $row) {
@@ -70,9 +68,7 @@ function users_with_top_score_on_date($pdo, $date)
             ORDER BY user_id ASC
     ";
 
-    $statement = $pdo->prepare($sql);
-    $statement->execute([$date, $date]);
-    $result = $statement->fetchAll();
+    $result = select($pdo, $sql, [$date, $date]);
 
     $ids = [];
     foreach ($result as $row) {
@@ -102,9 +98,15 @@ function times_user_beat_overall_daily_average($pdo, $user_id)
             )
     ", $user_id, $user_id);
 
-    $statement = $pdo->prepare($sql);
-    $statement->execute();
-    $result = $statement->fetchAll();
+    $result = select($pdo, $sql);
 
     return $result[0]['total'];
+}
+
+function select($pdo, $sql, $args = [])
+{
+    $statement = $pdo->prepare($sql);
+    $statement->execute($args);
+
+    return $statement->fetchAll();
 }

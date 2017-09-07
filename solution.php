@@ -42,7 +42,28 @@ function dates_with_at_least_n_scores($pdo, $n)
 
 function users_with_top_score_on_date($pdo, $date)
 {
-    // YOUR CODE GOES HERE
+    $sql = "
+        SELECT user_id
+            FROM scores
+            WHERE `date` = ?
+            AND score = (
+              SELECT MAX(score)
+                FROM scores
+                WHERE `date` = ?
+            )
+            ORDER BY user_id ASC
+    ";
+
+    $statement = $pdo->prepare($sql);
+    $statement->execute([$date, $date]);
+    $result = $statement->fetchAll();
+
+    $ids = [];
+    foreach ($result as $row) {
+        $ids[] = $row['user_id'];
+    }
+
+    return $ids;
 }
 
 function times_user_beat_overall_daily_average($pdo, $user_id)

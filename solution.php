@@ -1,9 +1,21 @@
 <?php
-// YOUR NAME AND EMAIL GOES HERE
+//  Robin Arenson (robin.arenson@gmail.com)
 
 function parse_request($request, $secret)
 {
-    // YOUR CODE GOES HERE
+    $request = strtr($request, '-_', '+/');
+
+    $parts = explode('.', $request);
+
+    if (count($parts) < 2) {
+        return false;
+    }
+
+    return json_decode(
+        base64_decode(
+            $parts[1]
+        ), true
+    );
 }
 
 function dates_with_at_least_n_scores($pdo, $n)

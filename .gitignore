@@ -1,2 +1,4 @@
+.idea/*
 solution_secret.php
 .DS_Store
+challenge.sqlite

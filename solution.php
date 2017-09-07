@@ -6,6 +6,10 @@ function is_signed_correctly($request, $secret)
     $request = strtr($request, '-_', '+/');
     $pieces = explode('.', $request);
 
+    if (count($pieces) < 2) {
+        return false;
+    }
+
     $signature = base64_decode($pieces[0]);
     $payload = base64_decode($pieces[1]);
 
@@ -21,15 +25,11 @@ function parse_request($request, $secret)
     }
 
     $request = strtr($request, '-_', '+/');
-    $parts = explode('.', $request);
-
-    if (count($parts) < 2) {
-        return false;
-    }
+    $pieces = explode('.', $request);
 
     return json_decode(
         base64_decode(
-            $parts[1]
+            $pieces[1]
         ), true
     );
 }

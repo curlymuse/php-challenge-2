@@ -81,22 +81,21 @@ function users_with_top_score_on_date($pdo, $date)
 function times_user_beat_overall_daily_average($pdo, $user_id)
 {
     $sql = sprintf("
-        SELECT COUNT(DISTINCT `date`) as total
-            FROM scores AS s1
-            WHERE user_id = %d
-            AND 
-            (
-                SELECT MAX(score)
-                  FROM scores AS s3
-                  WHERE user_id = %d
-                  AND s3.`date` = s1.`date`
-            ) >
-            (
-              SELECT AVG(score)
-                FROM scores AS s2
-                WHERE s1.`date` = s2.`date`
-            )
-    ", $user_id, $user_id);
+        SELECT COUNT(*) as total
+            FROM (
+              SELECT AVG(score) AS daily_average, `date`
+                FROM scores
+                GROUP BY `date`
+            ) all_averages
+            INNER JOIN (
+              SELECT AVG(score) AS user_average, `date`
+                FROM scores
+                WHERE user_id = %d
+                GROUP BY `date`
+            ) user_averages
+            ON all_averages.`date` = user_averages.`date`
+            WHERE user_averages.user_average > all_averages.daily_average
+    ", $user_id);
 
     $result = select($pdo, $sql);
 

@@ -1,10 +1,26 @@
 <?php
 //  Robin Arenson (robin.arenson@gmail.com)
 
-function parse_request($request, $secret)
+function is_signed_correctly($request, $secret)
 {
     $request = strtr($request, '-_', '+/');
+    $pieces = explode('.', $request);
 
+    $signature = base64_decode($pieces[0]);
+    $payload = base64_decode($pieces[1]);
+
+    $expectedSignature = hash_hmac('sha256', $payload, $secret, true);
+
+    return ($signature == $expectedSignature);
+}
+
+function parse_request($request, $secret)
+{
+    if (! is_signed_correctly($request, $secret)) {
+        return false;
+    }
+
+    $request = strtr($request, '-_', '+/');
     $parts = explode('.', $request);
 
     if (count($parts) < 2) {

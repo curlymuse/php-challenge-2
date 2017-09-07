@@ -72,8 +72,6 @@ $correct = 0;
 $actual  = times_user_beat_overall_daily_average($pdo, 3);
 assert($correct == $actual);
 
-
-
 // the following tests are based on the randomly generated dataset
 //populate_requests("./data/requests.txt", API_SECRET, pow(10, 5));
 
